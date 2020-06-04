@@ -12,7 +12,7 @@ import numpy as np
 
 
 def provide_dataset(class_to_train: int = None) -> np.array:
-    data_path: str = "/Users/rkobiela001/projects/private/gan_image_augmentation/data/cifar"
+    data_path: str = "/home/rkobiela/projects/gan_image_augmentation/data/cifar"
     config = Config()
     os.makedirs(data_path, exist_ok=True)
 
@@ -34,7 +34,7 @@ def provide_dataset(class_to_train: int = None) -> np.array:
 
 
 def provide_test_dataset(class_to_train1: int = None, class_to_train2: int = None):
-    data_path: str = "/Users/rkobiela001/projects/private/gan_image_augmentation/data/cifar"
+    data_path: str = "/home/rkobiela/projects/gan_image_augmentation/data/cifar"
     config = Config()
     os.makedirs(data_path, exist_ok=True)
 
@@ -76,7 +76,7 @@ def create_dataset(leave_n_true_samples: int):
 
     fakes_to_generate = dataset_1.shape[0] - leave_n_true_samples
     fakes = generate_image(fakes_to_generate)
-    fakes = fakes.detach().numpy()
+    fakes = fakes.cpu().detach().numpy()
     fakes_scaled = rescale_linear(fakes, 0, 255)
     # fakes2
     # fakes = np.transpose(fakes, (0, 2,3,1))

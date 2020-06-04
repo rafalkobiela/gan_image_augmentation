@@ -1,12 +1,14 @@
 import torch
 from torch import nn
 from torch.autograd import Variable
+from torch.utils.data import TensorDataset, DataLoader
 from torchvision.utils import save_image
 import numpy as np
 
 from data_provider.create_dataset import create_dataset
 from models.dcgan.model import train as train_dc_gan
 from models.dcgan.config import Config
+from testing_models.simple_conv import train_and_test
 
 
 def generate_image():
@@ -34,13 +36,16 @@ def train_imbalanced_gans():
     for number_of_samples in numbers_of_samples:
         train_dc_gan(number_of_samples, class_to_train)
 
+
 def train_discriminator(true_samples: int):
-    true_samples = 3000
-    X, y, X_test, y_test = create_dataset(true_samples)
-    X.shape
-    y.shape
-    X_test.shape
-    y_test.shape
+    # X, y, X_test, y_test = create_dataset(true_samples)
+    # tensor_x = torch.Tensor(X)
+    # tensor_y = torch.Tensor(y)
+    # my_dataset = TensorDataset(tensor_x, tensor_y)
+    # my_dataloader = DataLoader(my_dataset)
+    train_and_test()
+
+
 
 
 
@@ -48,4 +53,5 @@ def train_discriminator(true_samples: int):
 if __name__ == "__main__":
     # generate_image()
     # train_imbalanced_gans()
+    train_discriminator(3000)
     pass
