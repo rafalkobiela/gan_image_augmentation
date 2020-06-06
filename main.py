@@ -4,11 +4,13 @@ from torch.autograd import Variable
 from torch.utils.data import TensorDataset, DataLoader
 from torchvision.utils import save_image
 import numpy as np
+from tqdm import tqdm
 
 from data_provider.create_dataset import create_dataset
 from models.dcgan.model import train as train_dc_gan
 from models.dcgan.config import Config
 from testing_models.simple_conv import train_and_test
+from sklearn.metrics import f1_score
 
 
 def generate_image():
@@ -37,21 +39,28 @@ def train_imbalanced_gans():
         train_dc_gan(number_of_samples, class_to_train)
 
 
-def train_discriminator(true_samples: int):
+def train_discriminator(true_samples: int, verbose: int):
     # X, y, X_test, y_test = create_dataset(true_samples)
     # tensor_x = torch.Tensor(X)
     # tensor_y = torch.Tensor(y)
     # my_dataset = TensorDataset(tensor_x, tensor_y)
     # my_dataloader = DataLoader(my_dataset)
-    train_and_test()
-
-
-
-
+    y_true, y_pred = train_and_test(true_samples, verbose)
+    score = f1_score(y_true, y_pred)
+    if verbose:
+        print(score)
+    return score
 
 
 if __name__ == "__main__":
     # generate_image()
     # train_imbalanced_gans()
-    train_discriminator(3000)
-    pass
+    scores_dict = {}
+    for true_samples in tqdm(np.r_[2500:5001:100]):
+
+        scores = []
+        for _ in range(10):
+            score = train_discriminator(2500, 0)
+            scores.append(score)
+        scores_dict[true_samples] = np.mean(score)
+    print(scores_dict)

@@ -5,7 +5,7 @@ from torch.utils.data import TensorDataset, DataLoader
 from data_provider.create_dataset import create_dataset
 
 
-def train_and_test():
+def train_and_test(true_samples, verbose = 1):
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
     # Hyper parameters
@@ -13,7 +13,6 @@ def train_and_test():
     num_classes = 2
     batch_size = 100
     learning_rate = 0.001
-    true_samples = 2100
 
     X, y, X_test, y_test = create_dataset(true_samples)
     X_train = torch.Tensor(X)
@@ -90,7 +89,7 @@ def train_and_test():
             loss.backward()
             optimizer.step()
 
-            if (i + 1) % 10 == 0:
+            if (i + 1) % 10 == 0 and verbose:
                 print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'
                       .format(epoch + 1, num_epochs, i + 1, total_step, loss.item()))
 
@@ -105,5 +104,7 @@ def train_and_test():
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
+        if verbose:
+            print('Test Accuracy of the model on the 2000 test images: {} %'.format(100 * correct / total))
 
-        print('Test Accuracy of the model on the 2000 test images: {} %'.format(100 * correct / total))
+    return labels.cpu().detach().numpy(), predicted.cpu().detach().numpy()
