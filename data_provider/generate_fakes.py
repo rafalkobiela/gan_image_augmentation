@@ -1,12 +1,13 @@
 import numpy as np
 import torch
+from keras_preprocessing.image import ImageDataGenerator
 from torch import nn
 from torch.autograd import Variable
 
 from models.dcgan.config import Config
 
 
-def generate_image(number_of_images:int = 100):
+def gan_generate_image(number_of_images: int = 100):
     config = Config()
     Tensor = torch.cuda.FloatTensor if config.cuda else torch.FloatTensor
     if number_of_images > 1000:
@@ -36,6 +37,20 @@ def generate_image(number_of_images:int = 100):
         gen_imgs = model(z)
         return gen_imgs
     # print(gen_imgs.cpu().detach().numpy())
+
+
+def crops_generate_image(X: np.ndarray, number_of_images: int = 100):
+    datagen = ImageDataGenerator(
+        rotation_range=20,
+        width_shift_range=0.2,
+        height_shift_range=0.2,
+        horizontal_flip=True)
+    datagen.fit(X)
+    itr = datagen.flow(X, batch_size=number_of_images)
+    X_new = itr.next()
+    return X_new
+
+
 
 
 def load_model() -> nn.Module:

@@ -39,13 +39,13 @@ def train_imbalanced_gans():
         train_dc_gan(number_of_samples, class_to_train)
 
 
-def train_discriminator(true_samples: int, verbose: int):
+def train_discriminator(true_samples: int, verbose: int = 0, gan: bool = True):
     # X, y, X_test, y_test = create_dataset(true_samples)
     # tensor_x = torch.Tensor(X)
     # tensor_y = torch.Tensor(y)
     # my_dataset = TensorDataset(tensor_x, tensor_y)
     # my_dataloader = DataLoader(my_dataset)
-    y_true, y_pred = train_and_test(true_samples, verbose)
+    y_true, y_pred = train_and_test(true_samples, verbose, gan)
     score = f1_score(y_true, y_pred)
     if verbose:
         print(score)
@@ -55,12 +55,16 @@ def train_discriminator(true_samples: int, verbose: int):
 if __name__ == "__main__":
     # generate_image()
     # train_imbalanced_gans()
+
+    # train_discriminator(3000, verbose=1, gan=False)
+
     scores_dict = {}
     for true_samples in tqdm(np.r_[2500:5001:100]):
 
         scores = []
         for _ in range(10):
-            score = train_discriminator(2500, 0)
+            score = train_discriminator(2500, 0, False)
             scores.append(score)
         scores_dict[true_samples] = np.mean(score)
     print(scores_dict)
+

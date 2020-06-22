@@ -7,8 +7,11 @@ from torchvision.utils import save_image
 from sklearn.utils import shuffle
 
 from models.dcgan.config import Config
-from data_provider.generate_fakes import generate_image
+from data_provider.generate_fakes import gan_generate_image, crops_generate_image
 import numpy as np
+from imgaug import augmenters as iaa
+import tensorflow
+
 
 
 def provide_dataset(class_to_train: int = None) -> np.array:
@@ -65,7 +68,7 @@ def rescale_linear(array, new_min, new_max):
     return res
 
 
-def create_dataset(leave_n_true_samples: int):
+def create_dataset(leave_n_true_samples: int, gan: bool = True):
     dataset_1 = provide_dataset(1).astype(float)
     dataset_0 = provide_dataset(0).astype(float)
     dataset_0 = np.transpose(dataset_0, (0, 3, 1, 2))
@@ -75,9 +78,15 @@ def create_dataset(leave_n_true_samples: int):
     dataset_0 = dataset_0[samples_to_leave]
 
     fakes_to_generate = dataset_1.shape[0] - leave_n_true_samples
-    fakes = generate_image(fakes_to_generate)
-    fakes = fakes.cpu().detach().numpy()
-    fakes_scaled = rescale_linear(fakes, 0, 255)
+    if gan:
+        fakes = gan_generate_image(fakes_to_generate)
+        fakes = fakes.cpu().detach().numpy()
+        fakes_scaled = rescale_linear(fakes, 0, 255)
+    else:
+        fakes = crops_generate_image(dataset_0, fakes_to_generate)
+        fakes_scaled = fakes
+
+
     # fakes2
     # fakes = np.transpose(fakes, (0, 2,3,1))
 

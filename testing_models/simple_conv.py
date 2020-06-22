@@ -1,11 +1,12 @@
 import torch
 import torch.nn as nn
 from torch.utils.data import TensorDataset, DataLoader
+import torchvision.transforms as transforms
 
 from data_provider.create_dataset import create_dataset
 
 
-def train_and_test(true_samples, verbose = 1):
+def train_and_test(true_samples, verbose = 1, gan: bool = True):
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
     # Hyper parameters
@@ -14,7 +15,7 @@ def train_and_test(true_samples, verbose = 1):
     batch_size = 100
     learning_rate = 0.001
 
-    X, y, X_test, y_test = create_dataset(true_samples)
+    X, y, X_test, y_test = create_dataset(true_samples, gan)
     X_train = torch.Tensor(X)
     y_train = torch.Tensor(y)
     train_dataset = TensorDataset(X_train, y_train)
